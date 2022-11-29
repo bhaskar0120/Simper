@@ -13,31 +13,52 @@
  ** 0x0ZZ - pixel N
  **
  */
-import java.io.FileReader;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.io.FileInputStream;
+import java.io.DataInputStream;
 
-Scanner sc;
 boolean SET = false;
+PImage img;
+
 void settings() {
   int HEIGHT = 600;
   int WIDTH = 800;
-  try {
-    sc = new Scanner(new FileReader(".\\image.simp"));
-    HEIGHT = sc.nextInt();
-    WIDTH = sc.nextInt();
-    size(WIDTH, HEIGHT);
-    background(0);
-    PImage img = createImage(WIDTH, HEIGHT, RGB);
-    img.loadPixels();
-    for (int i = 0; i < HEIGHT*WIDTH; ++i) {
-      int t = sc.nextInt();
-      img.pixels[i] = color(t&0xFF000000, t&0x00FF0000, t&0x0000FF00);
+  String file= "";
+
+  try{
+    if(args != null){
+      file = args[0];
     }
-    image(img, 0, 0);
+    else{
+      throw new IOException("File not found");
+    }
+  }
+  catch(IOException E){
+    print(E);
+  }
+  try {
+    DataInputStream inp = new DataInputStream(new FileInputStream(file));
+    HEIGHT = inp.readInt();
+    WIDTH = inp.readInt();
+    
+    size(WIDTH, HEIGHT);
+    img = createImage(WIDTH, HEIGHT, RGB);
+    img.loadPixels();
+    byte[] buffer = new byte[HEIGHT*WIDTH*3];
+    
+    inp.read(buffer);
+    for (int i = 0; i < HEIGHT*WIDTH; ++i) {
+      int r = buffer[i*3+0];
+      r += r<0?256:0;
+      int g = buffer[i*3+1];
+      g += g<0?256:0;
+      int b = buffer[i*3+2];
+      b += b<0?256:0;
+      println(r,g,b);
+      img.pixels[i] = color(r,g,b);
+    }
     SET = true;
   }
-  catch(FileNotFoundException e) {
+  catch(IOException e) {
     println(e);
   }
   finally {
@@ -45,7 +66,10 @@ void settings() {
   }
 }
 void setup() {
-  if (!SET) {
+  if (SET) {
+    image(img, 0,0);
+  }
+  else{
     background(0);
     textSize(32);
     text("FILE NOT FOUND", 268, 270);
