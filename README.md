@@ -14,6 +14,15 @@ A very simple image format and viewer
 ```
 *Height and Width are to be stored in big-endian byteorder*
 
+### Compilation
+- Open the `Simper.pde` in Processing 3.x
+- File > Export > (Export for you OS)
+
+### Usage
+After putting Simper.exe in your environment you can run it like this
+`Simper.exe ./[IMAGE_NAME].simp`
+
 ### TODO
-- [ ] Make standalone executable 
+- [x] Make standalone executable 
 - [ ] Improve performance
+
